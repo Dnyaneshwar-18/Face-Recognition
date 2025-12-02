@@ -1,0 +1,6 @@
+opencv-contrib-python
+numpy
+pillow
+mysql-connector-python
+pytest
+flake8
