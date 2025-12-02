@@ -1,0 +1,57 @@
+name: Model Versioning
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-model:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create dummy data dir if none exists
+        run: |
+          mkdir -p data
+
+      - name: Generate dummy face data for CI
+        run: |
+          python - << 'EOF'
+          import cv2, numpy as np
+          import os
+
+          os.makedirs("data", exist_ok=True)
+          dummy = np.full((200,200), 150, dtype=np.uint8)
+
+          for i in range(1,10):
+              cv2.imwrite(f"data/user.1.{i}.jpg", dummy)
+          EOF
+
+      - name: Train model
+        run: |
+          python - << 'EOF'
+          from face_recognition_app import train_classifier
+          train_classifier()
+          EOF
+
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: face-recognition-model
+          path: classifier.xml
+
+          
