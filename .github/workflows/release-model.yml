@@ -6,6 +6,10 @@ on:
     branches:
       - master
 
+# Give GITHUB_TOKEN permission to create releases / write repo contents
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
